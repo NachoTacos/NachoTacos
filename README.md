@@ -18,8 +18,9 @@
 
 <a href="https://www.linkedin.com/in/jos%C3%A9-ignacio-contreras-m%C3%A9ndez-345291277/">Linkedin</a>
   
-  <h3>**Baddges**</h3>
+  <h3>**Programming languages**</h3>
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" / heigth = "100" width = "100">
-  
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" / height = "100" width = "100">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" / height = "100" width = "100">
 </p>
 
