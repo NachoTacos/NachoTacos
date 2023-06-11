@@ -5,7 +5,7 @@
 
 - 👯 I’m looking to collaborate on **any machine learning project**
 
-- 🤝 I’m looking for help with **artificial intelligence projects**
+- 🤝 I’m looking for help with **artificial intelligence **
 
 - 💬 Ask me about **Python, machine learning, c++**
 
