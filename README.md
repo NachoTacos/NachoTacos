@@ -16,6 +16,6 @@
 <h3 align="left">Connect with me:</h3>
 <p align="left">
 
-<a href="www.linkedin.com/in/josé-ignacio-contreras-méndez-345291277">Linkedin</a>
+<a href="https://www.linkedin.com/in/jos%C3%A9-ignacio-contreras-m%C3%A9ndez-345291277/">Linkedin</a>
 </p>
 
