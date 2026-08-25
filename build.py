@@ -24,6 +24,7 @@ import os
 import random
 import string
 from fontTools import subset
+from fontTools.ttLib import TTFont
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIG — this is the only part you need to touch
@@ -152,7 +153,13 @@ W, H = 1200, 780
 SX0, SY0, SX1, SY1 = 64, 52, 1136, 728        # screen bounds
 CX, CY = (SX0 + SX1) / 2, (SY0 + SY1) / 2
 HW, HH = (SX1 - SX0) / 2, (SY1 - SY0) / 2
-BARREL = 0.062                                 # 0 = flat, 0.12 = fishbowl
+BARREL = 0.062                                 # glass bulge: 0 = flat, 0.12 = fishbowl
+
+# The text grid gets its own, far gentler bulge. At the glass value the left
+# margin swings by more than a character between the top row and the middle,
+# which reads as broken alignment rather than as a curved screen — the game
+# renders its text dead straight and lets the physical tube do the curving.
+TEXT_BARREL = 0.012
 
 # Halo opacity under the glyphs. Stacking blurred copies of the text is what
 # blows the letters out, so the halo is drawn once at each radius and dimmed,
@@ -160,24 +167,22 @@ BARREL = 0.062                                 # 0 = flat, 0.12 = fishbowl
 BLOOM_NEAR = 0.35                              # tight glow, radius 3
 BLOOM_FAR = 0.22                               # wide glow, radius 12
 
-FS = 21                                        # font size
-ADV = FS * 0.60186                             # DejaVu Sans Mono advance width
+FS = 23                                        # font size
 LH = 28                                        # line height
+# ADV — the width of one character cell — is measured off the face itself,
+# just below advance_em().
 PAD_X, PAD_Y = 66, 76                          # text inset inside the screen
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 GAME_TEMPLATE = os.path.join(ROOT, "src", "terminal.html")
 
-# First one that exists wins. The layout maths assumes DejaVu's 0.60186em
-# advance (ADV above) — point this at another face and ADV must change too.
-FONT_PATHS = (
-    "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf",
-    "/usr/share/fonts/TTF/DejaVuSansMono-Bold.ttf",
-    "/usr/share/fonts/dejavu/DejaVuSansMono-Bold.ttf",
-    "/Library/Fonts/DejaVuSansMono-Bold.ttf",
-)
+# Vendored so the build does not depend on what is installed. Share Tech Mono
+# is SIL OFL (src/fonts/OFL.txt); the licence reserves the name "Share", which
+# is why the embedded face is declared as "TermMono" rather than under its own
+# name. Swap the file and the metrics below follow automatically.
+FONT_PATH = os.path.join(ROOT, "src", "fonts", "ShareTechMono-Regular.ttf")
 GLYPHS = ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-          "0123456789 .,:;'\"!?-_=+*/\\|()[]{}<>@#$%^&~`■")
+          "0123456789 .,:;'\"!?-_=+*/\\|()[]{}<>@#$%^&~`")
 
 # The characters the memory dump is padded with. No letters or digits, so the
 # hidden words are the only readable thing on screen.
@@ -187,14 +192,29 @@ GARBAGE = "!@#$%^&*()-_+=[]{}|\\/<>,.?;:'\""
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def font_path():
-    """First installed candidate face, or a clear error naming what was tried."""
-    for path in FONT_PATHS:
-        if os.path.exists(path):
-            return path
-    raise FileNotFoundError(
-        "no monospace face found; tried:\n  " + "\n  ".join(FONT_PATHS) +
-        "\nAdd yours to FONT_PATHS (and update ADV if it is not DejaVu).")
+def advance_em(path=FONT_PATH):
+    """The face's advance width in em, refusing anything that is not monospace.
+
+    Every x position in this file is a multiple of this, so measuring it beats
+    hardcoding it: swapping the font can no longer drift the glyph grid.
+    """
+    face = TTFont(path)
+    cmap = face.getBestCmap()
+    missing = [c for c in GLYPHS if ord(c) not in cmap]
+    if missing:
+        raise ValueError(
+            f"{os.path.basename(path)} has no glyph for: {' '.join(missing)}")
+
+    upem = face["head"].unitsPerEm
+    widths = {face["hmtx"][cmap[ord(c)]][0] for c in GLYPHS if c != " "}
+    if len(widths) != 1:
+        raise ValueError(
+            f"{os.path.basename(path)} is not monospace: {len(widths)} "
+            f"different advance widths across the glyph set")
+    return widths.pop() / upem
+
+
+ADV = FS * advance_em()    # px per character cell; the whole grid keys off it
 
 
 def embed_font(chars=GLYPHS):
@@ -208,7 +228,7 @@ def embed_font(chars=GLYPHS):
     opts.glyph_names = False
     opts.hinting = False
     opts.notdef_outline = False
-    font = subset.load_font(font_path(), opts)
+    font = subset.load_font(FONT_PATH, opts)
     sub = subset.Subsetter(options=opts)
     sub.populate(text=chars)
     sub.subset(font)
@@ -218,11 +238,11 @@ def embed_font(chars=GLYPHS):
     return f"data:font/ttf;base64,{b64}"
 
 
-def warp(x, y):
+def warp(x, y, barrel=BARREL):
     """Push a point outward from screen centre — the CRT's barrel bulge."""
     u = (x - CX) / HW
     v = (y - CY) / HH
-    f = 1 + BARREL * (u * u + v * v)
+    f = 1 + barrel * (u * u + v * v)
     return CX + u * f * HW, CY + v * f * HH
 
 
@@ -245,7 +265,7 @@ def warped_line(text, row, cls="", delay=None, x_chars=0):
         if ch == " ":
             continue
         px = SX0 + PAD_X + (x_chars + i) * ADV
-        wx, wy = warp(px, base_y)
+        wx, wy = warp(px, base_y, TEXT_BARREL)
         xs.append(f"{wx:.1f}")
         ys.append(f"{wy:.1f}")
         chars.append(ch)
@@ -255,12 +275,23 @@ def warped_line(text, row, cls="", delay=None, x_chars=0):
             f'{esc("".join(chars))}</text>')
 
 
+def block_at(row, col, cls, delay, width, height, rise):
+    """A solid rectangle sitting on a character cell of the warped grid."""
+    x, y = warp(SX0 + PAD_X + col * ADV, SY0 + PAD_Y + row * LH, TEXT_BARREL)
+    return (f'<rect class="{cls}" style="animation-delay:{delay:.2f}s" '
+            f'x="{x:.1f}" y="{y - rise:.1f}" '
+            f'width="{width:.1f}" height="{height:.1f}" fill="{GREEN}"/>')
+
+
 def warped_cursor(row, col, delay):
     """The blinking block that sits at a given character cell."""
-    x, y = warp(SX0 + PAD_X + col * ADV, SY0 + PAD_Y + row * LH)
-    return (f'<rect class="cur" style="animation-delay:{delay:.2f}s" '
-            f'x="{x:.1f}" y="{y - FS * 0.78:.1f}" '
-            f'width="{ADV:.1f}" height="{FS * 0.95:.1f}" fill="{GREEN}"/>')
+    return block_at(row, col, "cur", delay, ADV, FS * 0.95, FS * 0.78)
+
+
+def warped_pip(row, col, delay):
+    """One attempt marker. Drawn, not typed — the face has no filled square."""
+    side = ADV * 0.78
+    return block_at(row, col, "ln", delay, side, side, FS * 0.6)
 
 
 def screen_path(inset=0.0):
@@ -300,12 +331,12 @@ def crt_screen(text_markup, aria_label, font_uri, boot_end=None):
     @font-face {{
       font-family: "TermMono";
       src: url({font_uri}) format("truetype");
-      font-weight: 700;
+      font-weight: 400;
     }}
     text {{
       font-family: "TermMono", "Courier New", monospace;
       font-size: {FS}px;
-      font-weight: 700;
+      font-weight: 400;
       fill: {GREEN};
       white-space: pre;
     }}
@@ -557,8 +588,11 @@ def build_skills(font_uri, dump):
     for i, line in enumerate(SKILL_HEADER):
         lines.append(warped_line(line, i + 1, "ln", 0.15 + i * 0.12))
 
-    attempts = f"{SKILL_ATTEMPTS} ATTEMPT(S) LEFT: " + " ".join("■" * SKILL_ATTEMPTS)
-    lines.append(warped_line(attempts, len(SKILL_HEADER) + 2, "ln", 0.45))
+    label = f"{SKILL_ATTEMPTS} ATTEMPT(S) LEFT:"
+    pip_row = len(SKILL_HEADER) + 2
+    lines.append(warped_line(label, pip_row, "ln", 0.45))
+    for i in range(SKILL_ATTEMPTS):
+        lines.append(warped_pip(pip_row, len(label) + 1 + i * 2, 0.45))
 
     dump_top = len(SKILL_HEADER) + 4
     for i, line in enumerate(rows):
@@ -578,7 +612,7 @@ def build_skills(font_uri, dump):
 
 def build_button(label, font_uri, w=272, h=64):
     cx, cy = w / 2, h / 2 + 7
-    adv = 19 * 0.60186
+    adv = 19 * (ADV / FS)
     text = f"[ {label} ]"
     x0 = cx - len(text) * adv / 2
     xs = " ".join(f"{x0 + i * adv:.1f}" for i, ch in enumerate(text) if ch != " ")
@@ -587,9 +621,9 @@ def build_button(label, font_uri, w=272, h=64):
      width="{w}" height="{h}" role="img" aria-label="{label}">
 <defs>
   <style>
-    @font-face {{ font-family:"TermMono"; src:url({font_uri}) format("truetype"); font-weight:700; }}
+    @font-face {{ font-family:"TermMono"; src:url({font_uri}) format("truetype"); font-weight:400; }}
     text {{ font-family:"TermMono","Courier New",monospace; font-size:19px;
-            font-weight:700; fill:{GREEN}; }}
+            font-weight:400; fill:{GREEN}; }}
   </style>
   <filter id="g" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
     <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="a"/>

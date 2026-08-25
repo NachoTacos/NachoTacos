@@ -9,7 +9,7 @@
 @font-face {
   font-family: "TermMono";
   src: url($FONT) format("truetype");
-  font-weight: 700;
+  font-weight: 400;
   font-display: block;
 }
 
@@ -28,8 +28,8 @@ body {
   padding: clamp(14px, 3vw, 32px) clamp(10px, 2vw, 24px) 56px;
   background: #030604;
   color: var(--green);
-  font-family: "TermMono", "DejaVu Sans Mono", "Courier New", monospace;
-  font-weight: 700;
+  font-family: "TermMono", ui-monospace, "Courier New", monospace;
+  font-weight: 400;
   font-size: clamp(12px, 1.35vw, 17px);
   line-height: 1.34;
   display: flex;
@@ -158,6 +158,21 @@ body {
 .readout .item { color: var(--dim); }
 
 .log { white-space: pre; min-width: 21ch; }
+.blk {
+  display: inline-block;
+  width: 0.54em;          /* one character cell of the embedded face */
+  height: 0.95em;
+  vertical-align: -0.12em;
+  background: var(--green);
+}
+
+.pip {
+  width: 0.46em;
+  height: 0.46em;
+  vertical-align: 0.08em;
+  margin-right: 0.42em;
+}
+
 .prompt .blink { animation: blink 1.02s steps(1) infinite; }
 
 /* ── the bits around the glass ─────────────────────────────────────────── */
@@ -244,7 +259,7 @@ footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
       <div class="dump" id="dump"></div>
       <div>
         <div class="log" id="log"></div>
-        <p class="prompt">&gt;<span class="blink">&#9608;</span></p>
+        <p class="prompt">&gt;<span class="blk blink"></span></p>
       </div>
     </div>
 
@@ -354,10 +369,13 @@ footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
 
   // ── painting ───────────────────────────────────────────────────────────
 
-  function pips() {
-    var out = attempts + " ATTEMPT(S) LEFT: ";
-    for (var i = 0; i < attempts; i++) out += (i ? " " : "") + "■";
-    return out;
+  function paintPips() {
+    pipsEl.textContent = attempts + " ATTEMPT(S) LEFT: ";
+    for (var i = 0; i < attempts; i++) {
+      var pip = document.createElement("span");
+      pip.className = "blk pip";
+      pipsEl.appendChild(pip);
+    }
   }
 
   function paint() {
@@ -372,7 +390,7 @@ footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
       el.classList.toggle("sel", state === "play" && i >= lo && i <= hi);
     }
 
-    pipsEl.textContent = pips();
+    paintPips();
     logEl.textContent = log.slice(-DATA.logLines).join("\n");
   }
 

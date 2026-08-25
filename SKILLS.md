@@ -22,10 +22,10 @@ between sectors, <kbd>Enter</kbd> opens the one in focus, and
 <summary><code>&gt; SECTOR 01 -- LANGUAGES</code></summary>
 
 ```diff
-+ LANG-01....... ACCESS GRANTED
-+ LANG-02....... ACCESS GRANTED
-+ LANG-03....... ACCESS GRANTED
-+ LANG-04....... ACCESS GRANTED
++ C#....... ACCESS GRANTED
++ Python....... ACCESS GRANTED
++ Java....... ACCESS GRANTED
++ TypeScript....... ACCESS GRANTED
 ```
 
 </details>
@@ -34,20 +34,23 @@ between sectors, <kbd>Enter</kbd> opens the one in focus, and
 <summary><code>&gt; SECTOR 02 -- FRAMEWORKS</code></summary>
 
 ```diff
-+ FRAME-01...... ACCESS GRANTED
-+ FRAME-02...... ACCESS GRANTED
-+ FRAME-03...... ACCESS GRANTED
++ .NET...... ACCESS GRANTED
++ Angular...... ACCESS GRANTED
++ ReactNative...... ACCESS GRANTED
++ Expo...... ACCESS GRANTED
 ```
 
 </details>
 
 <details>
-<summary><code>&gt; SECTOR 03 -- TOOLING</code></summary>
+<summary><code>&gt; SECTOR 03 -- OTHERS</code></summary>
 
 ```diff
-+ TOOL-01....... ACCESS GRANTED
-+ TOOL-02....... ACCESS GRANTED
-+ TOOL-03....... ACCESS GRANTED
++ MySQL....... ACCESS GRANTED
++ PostgreSQL....... ACCESS GRANTED
++ Dbeaver....... ACCESS GRANTED
++ Git....... ACCESS GRANTED
++ Node.js....... ACCESS GRANTED
 ```
 
 </details>
@@ -56,9 +59,9 @@ between sectors, <kbd>Enter</kbd> opens the one in focus, and
 <summary><code>&gt; SECTOR 04 -- SYSTEMS</code></summary>
 
 ```diff
-+ SYS-01........ ACCESS GRANTED
-+ SYS-02........ ACCESS GRANTED
-+ SYS-03........ ACCESS GRANTED
++ AI........ ACCESS GRANTED
++ Linux........ ACCESS GRANTED
++ IoT........ ACCESS GRANTED
 ```
 
 </details>
