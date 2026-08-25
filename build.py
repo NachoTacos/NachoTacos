@@ -154,6 +154,12 @@ CX, CY = (SX0 + SX1) / 2, (SY0 + SY1) / 2
 HW, HH = (SX1 - SX0) / 2, (SY1 - SY0) / 2
 BARREL = 0.062                                 # 0 = flat, 0.12 = fishbowl
 
+# Halo opacity under the glyphs. Stacking blurred copies of the text is what
+# blows the letters out, so the halo is drawn once at each radius and dimmed,
+# with the sharp text painted over the top. Raise for more phosphor smear.
+BLOOM_NEAR = 0.35                              # tight glow, radius 3
+BLOOM_FAR = 0.22                               # wide glow, radius 12
+
 FS = 21                                        # font size
 ADV = FS * 0.60186                             # DejaVu Sans Mono advance width
 LH = 28                                        # line height
@@ -332,13 +338,17 @@ def crt_screen(text_markup, aria_label, font_uri, boot_end=None):
 
   <filter id="bloom" x="-25%" y="-25%" width="150%" height="150%"
           color-interpolation-filters="sRGB">
-    <feGaussianBlur in="SourceGraphic" stdDeviation="0.9" result="b1"/>
-    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b2"/>
-    <feGaussianBlur in="SourceGraphic" stdDeviation="13" result="b3"/>
+    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="near"/>
+    <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="far"/>
+    <feComponentTransfer in="near" result="nearHalo">
+      <feFuncA type="linear" slope="{BLOOM_NEAR}"/>
+    </feComponentTransfer>
+    <feComponentTransfer in="far" result="farHalo">
+      <feFuncA type="linear" slope="{BLOOM_FAR}"/>
+    </feComponentTransfer>
     <feMerge>
-      <feMergeNode in="b3"/><feMergeNode in="b3"/><feMergeNode in="b3"/>
-      <feMergeNode in="b2"/><feMergeNode in="b2"/>
-      <feMergeNode in="b1"/>
+      <feMergeNode in="farHalo"/>
+      <feMergeNode in="nearHalo"/>
       <feMergeNode in="SourceGraphic"/>
     </feMerge>
   </filter>
@@ -582,9 +592,11 @@ def build_button(label, font_uri, w=272, h=64):
             font-weight:700; fill:{GREEN}; }}
   </style>
   <filter id="g" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
-    <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="a"/>
-    <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
-    <feMerge><feMergeNode in="b"/><feMergeNode in="a"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="a"/>
+    <feComponentTransfer in="a" result="halo">
+      <feFuncA type="linear" slope="{BLOOM_NEAR}"/>
+    </feComponentTransfer>
+    <feMerge><feMergeNode in="halo"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
   <pattern id="s" width="3" height="3" patternUnits="userSpaceOnUse">
     <rect width="3" height="1.4" fill="#000" opacity="0.4"/>

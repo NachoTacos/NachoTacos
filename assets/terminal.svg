@@ -47,13 +47,17 @@
 
   <filter id="bloom" x="-25%" y="-25%" width="150%" height="150%"
           color-interpolation-filters="sRGB">
-    <feGaussianBlur in="SourceGraphic" stdDeviation="0.9" result="b1"/>
-    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b2"/>
-    <feGaussianBlur in="SourceGraphic" stdDeviation="13" result="b3"/>
+    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="near"/>
+    <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="far"/>
+    <feComponentTransfer in="near" result="nearHalo">
+      <feFuncA type="linear" slope="0.35"/>
+    </feComponentTransfer>
+    <feComponentTransfer in="far" result="farHalo">
+      <feFuncA type="linear" slope="0.22"/>
+    </feComponentTransfer>
     <feMerge>
-      <feMergeNode in="b3"/><feMergeNode in="b3"/><feMergeNode in="b3"/>
-      <feMergeNode in="b2"/><feMergeNode in="b2"/>
-      <feMergeNode in="b1"/>
+      <feMergeNode in="farHalo"/>
+      <feMergeNode in="nearHalo"/>
       <feMergeNode in="SourceGraphic"/>
     </feMerge>
   </filter>

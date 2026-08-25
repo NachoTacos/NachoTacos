@@ -2,8 +2,12 @@
 // results over the page. There is no test runner here, so run it by hand:
 //
 //   python3 -c "h=open('docs/index.html').read(); t=open('src/terminal.test.js').read(); \
-//     open('/tmp/t.html','w').write(h.replace('</body>','<script>'+t+'</script></body>'))"
+//     tag='<'+'/body>'; s='<scr'+'ipt>'+t+'</scr'+'ipt>'; \
+//     open('/tmp/t.html','w').write(h.replace(tag, s+tag))"
 //   firefox --headless --window-size=1000,700 --screenshot /tmp/t.png file:///tmp/t.html
+//
+// The tag names are split on purpose: a literal closing script tag anywhere in
+// this file — comments included — ends the block the browser injected it into.
 //
 // The screenshot says ALL n CHECKS PASS, or names what broke.
 
