@@ -110,8 +110,7 @@ body {
 .screen {
   position: relative;
   z-index: 1;
-  /* keep this in step with BLOOM_NEAR / BLOOM_FAR in build.py — a halo, not
-     a second copy of the text, or the glyphs blow out and stop being legible */
+
   text-shadow: 0 0 4px rgba(47, 255, 107, 0.35),
                0 0 14px rgba(47, 255, 107, 0.22);
 }
@@ -151,7 +150,7 @@ body {
 
 .dump.locked { opacity: 0.35; }
 
-/* the sector readout that replaces the dump once you are in */
+
 .readout { white-space: pre; }
 .readout div { opacity: 0; animation: type 0.01s linear forwards; }
 .readout .sector { color: var(--green); }
@@ -160,7 +159,7 @@ body {
 .log { white-space: pre; min-width: 21ch; }
 .blk {
   display: inline-block;
-  width: 0.54em;          /* one character cell of the embedded face */
+  width: 0.54em;         
   height: 0.95em;
   vertical-align: -0.12em;
   background: var(--green);
@@ -175,7 +174,6 @@ body {
 
 .prompt .blink { animation: blink 1.02s steps(1) infinite; }
 
-/* ── the bits around the glass ─────────────────────────────────────────── */
 
 .hint {
   margin: 1.6em 0 0;
@@ -196,7 +194,6 @@ body {
   color: var(--green);
 }
 
-/* visibility, not display, so activating the terminal does not shift the page */
 .crt.live .wake, .crt.done .wake { visibility: hidden; }
 
 button {
@@ -248,7 +245,7 @@ footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
 
   <div class="screen">
     <div class="head">
-      <p>NOVACORP INDUSTRIES (TM) TERMLINK PROTOCOL</p>
+      <p>ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL</p>
       <p>ENTER PASSWORD NOW</p>
       <p class="attempts"><span id="pips">&nbsp;</span></p>
     </div>
@@ -522,8 +519,7 @@ footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
 
     if (e.key === "Escape") { termEl.blur(); return; }
 
-    // once it is won or locked the only way on is the reset button, which
-    // took focus already — no stray Enter wipes the message you just earned
+ 
     if (state !== "play") return;
 
     if (e.key === "ArrowLeft") move(-1);
@@ -583,7 +579,6 @@ footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
 
   reset();
 
-  // exposed so the build can drive it in a headless browser
   window.TERMLINK = {
     state: function () { return state; },
     attempts: function () { return attempts; },
