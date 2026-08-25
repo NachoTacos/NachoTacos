@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOVACORP TERMLINK</title>
+<meta name="description" content="A working RobCo-style terminal hack. Find the password among the memory dump to unlock the skill matrix.">
+<style>
+@font-face {
+  font-family: "TermMono";
+  src: url(data:font/ttf;base64,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) format("truetype");
+  font-weight: 700;
+  font-display: block;
+}
+
+:root {
+  --green: #2fff6b;
+  --dim: #15a844;
+  --bg: #050f07;
+  --glow: #0c2c15;
+  --ink: #04170a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: clamp(14px, 3vw, 32px) clamp(10px, 2vw, 24px) 56px;
+  background: #030604;
+  color: var(--green);
+  font-family: "TermMono", "DejaVu Sans Mono", "Courier New", monospace;
+  font-weight: 700;
+  font-size: clamp(12px, 1.35vw, 17px);
+  line-height: 1.34;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 2.5vw, 26px);
+  min-height: 100vh;
+}
+
+/* ── the glass ─────────────────────────────────────────────────────────── */
+
+.crt {
+  position: relative;
+  width: min(1120px, 100%);
+  padding: clamp(16px, 3vw, 38px);
+  border-radius: 22px / 30px;
+  background: radial-gradient(ellipse at 50% 46%, var(--glow) 0%, var(--bg) 72%);
+  box-shadow: 0 0 0 2px #0c1a10, 0 0 70px rgba(47, 255, 107, 0.10);
+  overflow: hidden;
+}
+
+.crt::before,
+.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* scanlines sit over the phosphor */
+.crt::before {
+  z-index: 3;
+  background: repeating-linear-gradient(to bottom,
+    rgba(0, 0, 0, 0.42) 0 1.4px, rgba(0, 0, 0, 0) 1.4px 3px);
+  animation: drift 0.55s linear infinite;
+}
+
+/* vignette closes the corners */
+.crt::after {
+  z-index: 4;
+  background: radial-gradient(ellipse at 50% 48%,
+    rgba(0, 0, 0, 0) 46%, rgba(0, 0, 0, 0.92) 100%);
+}
+
+.roll, .flick {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.roll {
+  top: 0;
+  height: 220px;
+  background: linear-gradient(to bottom,
+    rgba(47, 255, 107, 0) 0%, rgba(47, 255, 107, 0.055) 50%,
+    rgba(47, 255, 107, 0) 100%);
+  animation: sweep 8s linear infinite;
+}
+
+.flick {
+  top: 0;
+  bottom: 0;
+  background: var(--green);
+  opacity: 0;
+  animation: flick 2.7s ease-in-out infinite;
+}
+
+@keyframes drift { to { background-position: 0 3px; } }
+@keyframes sweep { from { transform: translateY(-260px); }
+                   to   { transform: translateY(860px); } }
+@keyframes flick { 0%, 100% { opacity: 0; } 46% { opacity: 0.05; }
+                   49% { opacity: 0; } 51% { opacity: 0.035; } }
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes type  { to { opacity: 1; } }
+
+.screen {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 0 2px rgba(47, 255, 107, 0.85),
+               0 0 10px rgba(47, 255, 107, 0.45),
+               0 0 26px rgba(47, 255, 107, 0.22);
+}
+
+.screen p { margin: 0; }
+.head { margin-bottom: 1.4em; }
+.head .attempts { margin-top: 1.4em; }
+
+/* ── the dump ──────────────────────────────────────────────────────────── */
+
+.body {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(10px, 2.5vw, 40px);
+  align-items: start;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.body:focus { outline: none; }
+.body:focus-visible { outline: 1px dashed rgba(47, 255, 107, 0.55); outline-offset: 8px; }
+
+.dump {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0 clamp(10px, 2vw, 30px);
+}
+
+.row { white-space: pre; }
+.addr { color: var(--dim); }
+
+.dump span.sel {
+  background: var(--green);
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.dump.locked { opacity: 0.35; }
+
+/* the sector readout that replaces the dump once you are in */
+.readout { white-space: pre; }
+.readout div { opacity: 0; animation: type 0.01s linear forwards; }
+.readout .sector { color: var(--green); }
+.readout .item { color: var(--dim); }
+
+.log { white-space: pre; min-width: 21ch; }
+.prompt .blink { animation: blink 1.02s steps(1) infinite; }
+
+/* ── the bits around the glass ─────────────────────────────────────────── */
+
+.hint {
+  margin: 1.6em 0 0;
+  color: var(--dim);
+  text-shadow: none;
+}
+
+.hint kbd {
+  font: inherit;
+  border: 1px solid var(--dim);
+  border-radius: 3px;
+  padding: 0 4px;
+  color: var(--green);
+}
+
+.wake {
+  margin: 0.5em 0 0;
+  color: var(--green);
+}
+
+/* visibility, not display, so activating the terminal does not shift the page */
+.crt.live .wake, .crt.done .wake { visibility: hidden; }
+
+button {
+  font: inherit;
+  color: var(--green);
+  background: var(--bg);
+  border: 1px solid #1c6b34;
+  border-radius: 5px;
+  padding: 0.55em 1.4em;
+  cursor: pointer;
+}
+
+button:hover, button:focus-visible { background: #0c2c15; }
+
+footer {
+  width: min(1120px, 100%);
+  color: var(--dim);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+}
+
+footer a { color: var(--green); }
+footer summary { cursor: pointer; color: var(--green); }
+footer ul { margin: 0.4em 0 1em; padding-left: 1.4em; }
+footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crt::before, .roll, .flick, .prompt .blink, .readout div { animation: none; }
+  .roll, .flick { display: none; }
+  .readout div { opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<main class="crt" id="crt">
+  <div class="roll"></div>
+  <div class="flick"></div>
+
+  <div class="screen">
+    <div class="head">
+      <p>NOVACORP INDUSTRIES (TM) TERMLINK PROTOCOL</p>
+      <p>ENTER PASSWORD NOW</p>
+      <p class="attempts"><span id="pips">&nbsp;</span></p>
+    </div>
+
+    <div class="body" id="terminal" tabindex="0" role="application"
+         aria-label="Password terminal. A memory dump you search for the password."
+         aria-describedby="hint">
+      <div class="dump" id="dump"></div>
+      <div>
+        <div class="log" id="log"></div>
+        <p class="prompt">&gt;<span class="blink">&#9608;</span></p>
+      </div>
+    </div>
+
+    <p class="hint" id="hint">
+      <kbd>&larr;</kbd><kbd>&rarr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd> move
+      &nbsp; <kbd>Tab</kbd> jump to the next word
+      &nbsp; <kbd>Enter</kbd> try it
+      &nbsp; <kbd>Esc</kbd> leave the terminal
+    </p>
+    <p class="hint wake" id="wake">CLICK OR PRESS <kbd>Tab</kbd> TO ACTIVATE TERMINAL</p>
+    <p class="hint"><button id="reset" hidden>RESET TERMINAL</button></p>
+  </div>
+</main>
+
+<p class="sr" id="status" role="status" aria-live="polite"></p>
+
+<footer>
+  <noscript><p>This terminal needs JavaScript. The full list is below.</p></noscript>
+  <details>
+    <summary>&gt; DISPLAY PLAINTEXT</summary>
+    <h2>SECTOR 01 -- LANGUAGES</h2><ul><li>LANG-01</li><li>LANG-02</li><li>LANG-03</li><li>LANG-04</li></ul><h2>SECTOR 02 -- FRAMEWORKS</h2><ul><li>FRAME-01</li><li>FRAME-02</li><li>FRAME-03</li></ul><h2>SECTOR 03 -- TOOLING</h2><ul><li>TOOL-01</li><li>TOOL-02</li><li>TOOL-03</li></ul><h2>SECTOR 04 -- SYSTEMS</h2><ul><li>SYS-01</li><li>SYS-02</li><li>SYS-03</li></ul>
+  </details>
+  <p><a href="https://github.com/NachoTacos">&lt; BACK TO PROFILE</a></p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var DATA = {"rows":15,"cell":12,"addr":62704,"attempts":4,"logLines":16,"cells":["/\",}]^';&|/)",">?#[$_+#_,.(","{&&%[:*-!#?:","?&>+%@%[?@!/","-/$([$\\,}?^#",">SYS-01>{|_}","&_,[{.@-\"]\\[","[}]@:?%!^?;?","*/\\\"??&=.:_&","!,[:;)]{$;#+","*=|?%\\[-'$(&",":>\"'FRAME-03",":\\*;TOOL-01&","^=*|}?[=;.\\(",",:?%@(@{(|).","TOOL-02/!({[","+;^{LANG-03\\","{[+)?-?//(&{",".;-._|#=.\\%:","++-{,$\\}&'\"}","SYS-03[?|?!(",">(\\)(][;[@.]",">}?[>-*(^$=>","?\\\\&FRAME-02","LANG-01_&[.*","\u003c*_\\FRAME-01","]%)LANG-04)\"","\"!?@LANG-02)","TOOL-03&.&*!","\u003c|SYS-02+\\.}"],"words":[[61,"SYS-01"],[136,"FRAME-03"],[148,"TOOL-01"],[180,"TOOL-02"],[196,"LANG-03"],[240,"SYS-03"],[280,"FRAME-02"],[288,"LANG-01"],[304,"FRAME-01"],[315,"LANG-04"],[328,"LANG-02"],[336,"TOOL-03"],[350,"SYS-02"]],"tricks":[[68,71],[75,81],[84,86],[110,114],[173,178],[231,235],[253,255],[258,263]],"sectors":[["LANGUAGES",["LANG-01","LANG-02","LANG-03","LANG-04"]],["FRAMEWORKS",["FRAME-01","FRAME-02","FRAME-03"]],["TOOLING",["TOOL-01","TOOL-02","TOOL-03"]],["SYSTEMS",["SYS-01","SYS-02","SYS-03"]]]};
+
+  var CELL = DATA.cell;
+  var ROWS = DATA.rows;
+  var TOTAL = DATA.cells.length * CELL;
+
+  var crtEl = document.getElementById("crt");
+  var termEl = document.getElementById("terminal");
+  var dumpEl = document.getElementById("dump");
+  var logEl = document.getElementById("log");
+  var pipsEl = document.getElementById("pips");
+  var statusEl = document.getElementById("status");
+  var resetEl = document.getElementById("reset");
+
+  var chars = [];
+  var charEls = new Array(TOTAL);
+  var tokens = [];
+  var owner = new Int16Array(TOTAL);
+
+  var caret = 0;
+  var attempts = DATA.attempts;
+  var answer = "";
+  var state = "play";
+  var log = [];
+
+  // ── the dump grid ──────────────────────────────────────────────────────
+
+  function hex(n) {
+    return ("0000" + n.toString(16).toUpperCase()).slice(-4);
+  }
+
+  function buildGrid() {
+    dumpEl.className = "dump";
+    dumpEl.innerHTML = "";
+    for (var c = 0; c < 2; c++) {
+      var col = document.createElement("div");
+      for (var r = 0; r < ROWS; r++) {
+        var cell = c * ROWS + r;
+        var row = document.createElement("div");
+        row.className = "row";
+        var addr = document.createElement("span");
+        addr.className = "addr";
+        addr.textContent = "0x" + hex(DATA.addr + cell * CELL) + " ";
+        row.appendChild(addr);
+        for (var k = 0; k < CELL; k++) {
+          var i = cell * CELL + k;
+          var span = document.createElement("span");
+          span.textContent = chars[i];
+          span.setAttribute("data-i", i);
+          row.appendChild(span);
+          charEls[i] = span;
+        }
+        col.appendChild(row);
+      }
+      dumpEl.appendChild(col);
+    }
+  }
+
+  function loadTokens() {
+    tokens = [];
+    DATA.words.forEach(function (w) {
+      tokens.push({ kind: "word", start: w[0], end: w[0] + w[1].length - 1,
+                    text: w[1], alive: true });
+    });
+    DATA.tricks.forEach(function (t) {
+      tokens.push({ kind: "trick", start: t[0], end: t[1], alive: true });
+    });
+    reindex();
+  }
+
+  function reindex() {
+    owner.fill(-1);
+    tokens.forEach(function (token, t) {
+      if (!token.alive) return;
+      for (var i = token.start; i <= token.end; i++) owner[i] = t;
+    });
+  }
+
+  // ── painting ───────────────────────────────────────────────────────────
+
+  function pips() {
+    var out = attempts + " ATTEMPT(S) LEFT: ";
+    for (var i = 0; i < attempts; i++) out += (i ? " " : "") + "■";
+    return out;
+  }
+
+  function paint() {
+    var lo = caret, hi = caret;
+    var t = owner[caret];
+    if (t >= 0) { lo = tokens[t].start; hi = tokens[t].end; }
+
+    for (var i = 0; i < TOTAL; i++) {
+      var el = charEls[i];
+      if (!el) continue;
+      if (el.textContent !== chars[i]) el.textContent = chars[i];
+      el.classList.toggle("sel", state === "play" && i >= lo && i <= hi);
+    }
+
+    pipsEl.textContent = pips();
+    logEl.textContent = log.slice(-DATA.logLines).join("\n");
+  }
+
+  function push(line) {
+    log.push(line);
+    statusEl.textContent = line;
+  }
+
+  // ── moving around ──────────────────────────────────────────────────────
+
+  function move(step) {
+    caret = Math.min(TOTAL - 1, Math.max(0, caret + step));
+  }
+
+  function moveRow(step) {
+    var cell = Math.floor(caret / CELL);
+    var column = cell < ROWS ? 0 : 1;
+    var row = cell - column * ROWS + step;
+    if (row < 0 || row >= ROWS) return;
+    caret = (column * ROWS + row) * CELL + (caret % CELL);
+  }
+
+  function hop(dir) {
+    var starts = tokens.filter(function (t) { return t.alive; })
+                       .map(function (t) { return t.start; })
+                       .sort(function (a, b) { return a - b; });
+    if (!starts.length) return;
+    var here = owner[caret] >= 0 ? tokens[owner[caret]].start : caret;
+    var next = null;
+    for (var i = 0; i < starts.length; i++) {
+      if (dir > 0 && starts[i] > here) { next = starts[i]; break; }
+      if (dir < 0 && starts[i] < here) next = starts[i];
+    }
+    caret = next === null ? (dir > 0 ? starts[0] : starts[starts.length - 1]) : next;
+  }
+
+  // ── the rules ──────────────────────────────────────────────────────────
+
+  function likeness(guess, secret) {
+    var n = Math.min(guess.length, secret.length);
+    var hits = 0;
+    for (var i = 0; i < n; i++) if (guess[i] === secret[i]) hits++;
+    return hits;
+  }
+
+  function eraseWord(token) {
+    token.alive = false;
+    for (var i = token.start; i <= token.end; i++) chars[i] = ".";
+  }
+
+  function tryWord(token) {
+    push(">" + token.text);
+    if (token.text === answer) { unlock(); return; }
+    attempts--;
+    push(">Entry denied.");
+    push(">" + likeness(token.text, answer) + "/" + answer.length + " correct.");
+    if (attempts <= 0) lockOut();
+  }
+
+  function useTrick(token) {
+    token.alive = false;
+    var duds = tokens.filter(function (t) {
+      return t.alive && t.kind === "word" && t.text !== answer;
+    });
+    if (duds.length === 0 || Math.random() < 0.25) {
+      attempts = DATA.attempts;
+      push(">Allowance replenished.");
+    } else {
+      eraseWord(duds[Math.floor(Math.random() * duds.length)]);
+      push(">Dud removed.");
+    }
+    reindex();
+  }
+
+  function activate() {
+    var t = owner[caret];
+    if (t < 0 || !tokens[t].alive) return;
+    if (tokens[t].kind === "trick") useTrick(tokens[t]);
+    else tryWord(tokens[t]);
+  }
+
+  function unlock() {
+    state = "win";
+    push(">Entry granted.");
+    push(">Skill matrix open.");
+    showMatrix();
+    finish();
+  }
+
+  function lockOut() {
+    state = "lock";
+    push(">TERMINAL LOCKED");
+    push(">CONTACT AN ADMIN");
+    dumpEl.classList.add("locked");
+    finish();
+  }
+
+  function finish() {
+    crtEl.classList.add("done");
+    resetEl.hidden = false;
+    resetEl.focus();
+  }
+
+
+  function showMatrix() {
+    dumpEl.className = "readout";
+    dumpEl.innerHTML = "";
+    var line = 0;
+    function write(text, cls) {
+      var div = document.createElement("div");
+      div.className = cls || "";
+      div.textContent = text;
+      div.style.animationDelay = (line++ * 0.06).toFixed(2) + "s";
+      dumpEl.appendChild(div);
+    }
+    write("PERSONNEL SKILL MATRIX");
+    write("");
+    DATA.sectors.forEach(function (sector, i) {
+      write("SECTOR " + ("0" + (i + 1)).slice(-2) + " -- " + sector[0], "sector");
+      sector[1].forEach(function (word) { write("   " + word, "item"); });
+      write("");
+    });
+  }
+
+  // ── wiring ─────────────────────────────────────────────────────────────
+
+  termEl.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+
+    if (e.key === "Escape") { termEl.blur(); return; }
+
+    // once it is won or locked the only way on is the reset button, which
+    // took focus already — no stray Enter wipes the message you just earned
+    if (state !== "play") return;
+
+    if (e.key === "ArrowLeft") move(-1);
+    else if (e.key === "ArrowRight") move(1);
+    else if (e.key === "ArrowUp") moveRow(-1);
+    else if (e.key === "ArrowDown") moveRow(1);
+    else if (e.key === "Tab") hop(e.shiftKey ? -1 : 1);
+    else if (e.key === "Enter" || e.key === " ") activate();
+    else if (e.key === "Home") caret = 0;
+    else if (e.key === "End") caret = TOTAL - 1;
+    else return;
+
+    e.preventDefault();
+    paint();
+  });
+
+  dumpEl.addEventListener("mousemove", function (e) {
+    if (state !== "play") return;
+    var i = e.target.getAttribute && e.target.getAttribute("data-i");
+    if (i === null || i === undefined) return;
+    caret = Number(i);
+    paint();
+  });
+
+  dumpEl.addEventListener("click", function (e) {
+    if (state !== "play") return;
+    var i = e.target.getAttribute && e.target.getAttribute("data-i");
+    if (i === null || i === undefined) return;
+    caret = Number(i);
+    termEl.focus();
+    activate();
+    paint();
+  });
+
+  termEl.addEventListener("focus", function () { crtEl.classList.add("live"); });
+  termEl.addEventListener("blur", function () { crtEl.classList.remove("live"); });
+  document.getElementById("wake").addEventListener("click", function () {
+    termEl.focus();
+  });
+
+  resetEl.addEventListener("click", function () { reset(); termEl.focus(); });
+
+  function reset() {
+    chars = DATA.cells.join("").split("");
+    state = "play";
+    attempts = DATA.attempts;
+    log = [">TERMLINK READY", ">ENTER PASSWORD"];
+    answer = DATA.words[Math.floor(Math.random() * DATA.words.length)][1];
+    dumpEl.classList.remove("locked");
+    crtEl.classList.remove("done");
+    resetEl.hidden = true;
+    buildGrid();
+    loadTokens();
+    caret = tokens.length ? tokens[0].start : 0;
+    paint();
+  }
+
+  reset();
+
+  // exposed so the build can drive it in a headless browser
+  window.TERMLINK = {
+    state: function () { return state; },
+    attempts: function () { return attempts; },
+    answer: function () { return answer; },
+    caret: function () { return caret; },
+    tokenAt: function (i) { return owner[i]; },
+    tokens: function () { return tokens; },
+    chars: function () { return chars.join(""); },
+    log: function () { return log; },
+    reset: reset,
+    setCaret: function (i) { caret = i; paint(); },
+    press: function (key, shift) {
+      termEl.dispatchEvent(new KeyboardEvent("keydown", {
+        key: key, shiftKey: !!shift, bubbles: true, cancelable: true
+      }));
+    }
+  };
+})();
+</script>
+</body>
+</html>

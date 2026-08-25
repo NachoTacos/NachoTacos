@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$TITLE</title>
+<meta name="description" content="A working RobCo-style terminal hack. Find the password among the memory dump to unlock the skill matrix.">
+<style>
+@font-face {
+  font-family: "TermMono";
+  src: url($FONT) format("truetype");
+  font-weight: 700;
+  font-display: block;
+}
+
+:root {
+  --green: #2fff6b;
+  --dim: #15a844;
+  --bg: #050f07;
+  --glow: #0c2c15;
+  --ink: #04170a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: clamp(14px, 3vw, 32px) clamp(10px, 2vw, 24px) 56px;
+  background: #030604;
+  color: var(--green);
+  font-family: "TermMono", "DejaVu Sans Mono", "Courier New", monospace;
+  font-weight: 700;
+  font-size: clamp(12px, 1.35vw, 17px);
+  line-height: 1.34;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 2.5vw, 26px);
+  min-height: 100vh;
+}
+
+/* ── the glass ─────────────────────────────────────────────────────────── */
+
+.crt {
+  position: relative;
+  width: min(1120px, 100%);
+  padding: clamp(16px, 3vw, 38px);
+  border-radius: 22px / 30px;
+  background: radial-gradient(ellipse at 50% 46%, var(--glow) 0%, var(--bg) 72%);
+  box-shadow: 0 0 0 2px #0c1a10, 0 0 70px rgba(47, 255, 107, 0.10);
+  overflow: hidden;
+}
+
+.crt::before,
+.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* scanlines sit over the phosphor */
+.crt::before {
+  z-index: 3;
+  background: repeating-linear-gradient(to bottom,
+    rgba(0, 0, 0, 0.42) 0 1.4px, rgba(0, 0, 0, 0) 1.4px 3px);
+  animation: drift 0.55s linear infinite;
+}
+
+/* vignette closes the corners */
+.crt::after {
+  z-index: 4;
+  background: radial-gradient(ellipse at 50% 48%,
+    rgba(0, 0, 0, 0) 46%, rgba(0, 0, 0, 0.92) 100%);
+}
+
+.roll, .flick {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.roll {
+  top: 0;
+  height: 220px;
+  background: linear-gradient(to bottom,
+    rgba(47, 255, 107, 0) 0%, rgba(47, 255, 107, 0.055) 50%,
+    rgba(47, 255, 107, 0) 100%);
+  animation: sweep 8s linear infinite;
+}
+
+.flick {
+  top: 0;
+  bottom: 0;
+  background: var(--green);
+  opacity: 0;
+  animation: flick 2.7s ease-in-out infinite;
+}
+
+@keyframes drift { to { background-position: 0 3px; } }
+@keyframes sweep { from { transform: translateY(-260px); }
+                   to   { transform: translateY(860px); } }
+@keyframes flick { 0%, 100% { opacity: 0; } 46% { opacity: 0.05; }
+                   49% { opacity: 0; } 51% { opacity: 0.035; } }
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes type  { to { opacity: 1; } }
+
+.screen {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 0 2px rgba(47, 255, 107, 0.85),
+               0 0 10px rgba(47, 255, 107, 0.45),
+               0 0 26px rgba(47, 255, 107, 0.22);
+}
+
+.screen p { margin: 0; }
+.head { margin-bottom: 1.4em; }
+.head .attempts { margin-top: 1.4em; }
+
+/* ── the dump ──────────────────────────────────────────────────────────── */
+
+.body {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(10px, 2.5vw, 40px);
+  align-items: start;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.body:focus { outline: none; }
+.body:focus-visible { outline: 1px dashed rgba(47, 255, 107, 0.55); outline-offset: 8px; }
+
+.dump {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0 clamp(10px, 2vw, 30px);
+}
+
+.row { white-space: pre; }
+.addr { color: var(--dim); }
+
+.dump span.sel {
+  background: var(--green);
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.dump.locked { opacity: 0.35; }
+
+/* the sector readout that replaces the dump once you are in */
+.readout { white-space: pre; }
+.readout div { opacity: 0; animation: type 0.01s linear forwards; }
+.readout .sector { color: var(--green); }
+.readout .item { color: var(--dim); }
+
+.log { white-space: pre; min-width: 21ch; }
+.prompt .blink { animation: blink 1.02s steps(1) infinite; }
+
+/* ── the bits around the glass ─────────────────────────────────────────── */
+
+.hint {
+  margin: 1.6em 0 0;
+  color: var(--dim);
+  text-shadow: none;
+}
+
+.hint kbd {
+  font: inherit;
+  border: 1px solid var(--dim);
+  border-radius: 3px;
+  padding: 0 4px;
+  color: var(--green);
+}
+
+.wake {
+  margin: 0.5em 0 0;
+  color: var(--green);
+}
+
+/* visibility, not display, so activating the terminal does not shift the page */
+.crt.live .wake, .crt.done .wake { visibility: hidden; }
+
+button {
+  font: inherit;
+  color: var(--green);
+  background: var(--bg);
+  border: 1px solid #1c6b34;
+  border-radius: 5px;
+  padding: 0.55em 1.4em;
+  cursor: pointer;
+}
+
+button:hover, button:focus-visible { background: #0c2c15; }
+
+footer {
+  width: min(1120px, 100%);
+  color: var(--dim);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+}
+
+footer a { color: var(--green); }
+footer summary { cursor: pointer; color: var(--green); }
+footer ul { margin: 0.4em 0 1em; padding-left: 1.4em; }
+footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crt::before, .roll, .flick, .prompt .blink, .readout div { animation: none; }
+  .roll, .flick { display: none; }
+  .readout div { opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<main class="crt" id="crt">
+  <div class="roll"></div>
+  <div class="flick"></div>
+
+  <div class="screen">
+    <div class="head">
+      <p>NOVACORP INDUSTRIES (TM) TERMLINK PROTOCOL</p>
+      <p>ENTER PASSWORD NOW</p>
+      <p class="attempts"><span id="pips">&nbsp;</span></p>
+    </div>
+
+    <div class="body" id="terminal" tabindex="0" role="application"
+         aria-label="Password terminal. A memory dump you search for the password."
+         aria-describedby="hint">
+      <div class="dump" id="dump"></div>
+      <div>
+        <div class="log" id="log"></div>
+        <p class="prompt">&gt;<span class="blink">&#9608;</span></p>
+      </div>
+    </div>
+
+    <p class="hint" id="hint">
+      <kbd>&larr;</kbd><kbd>&rarr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd> move
+      &nbsp; <kbd>Tab</kbd> jump to the next word
+      &nbsp; <kbd>Enter</kbd> try it
+      &nbsp; <kbd>Esc</kbd> leave the terminal
+    </p>
+    <p class="hint wake" id="wake">CLICK OR PRESS <kbd>Tab</kbd> TO ACTIVATE TERMINAL</p>
+    <p class="hint"><button id="reset" hidden>RESET TERMINAL</button></p>
+  </div>
+</main>
+
+<p class="sr" id="status" role="status" aria-live="polite"></p>
+
+<footer>
+  <noscript><p>This terminal needs JavaScript. The full list is below.</p></noscript>
+  <details>
+    <summary>&gt; DISPLAY PLAINTEXT</summary>
+    $PLAINTEXT
+  </details>
+  <p><a href="$PROFILE_URL">&lt; BACK TO PROFILE</a></p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var DATA = $DATA;
+
+  var CELL = DATA.cell;
+  var ROWS = DATA.rows;
+  var TOTAL = DATA.cells.length * CELL;
+
+  var crtEl = document.getElementById("crt");
+  var termEl = document.getElementById("terminal");
+  var dumpEl = document.getElementById("dump");
+  var logEl = document.getElementById("log");
+  var pipsEl = document.getElementById("pips");
+  var statusEl = document.getElementById("status");
+  var resetEl = document.getElementById("reset");
+
+  var chars = [];
+  var charEls = new Array(TOTAL);
+  var tokens = [];
+  var owner = new Int16Array(TOTAL);
+
+  var caret = 0;
+  var attempts = DATA.attempts;
+  var answer = "";
+  var state = "play";
+  var log = [];
+
+  // ── the dump grid ──────────────────────────────────────────────────────
+
+  function hex(n) {
+    return ("0000" + n.toString(16).toUpperCase()).slice(-4);
+  }
+
+  function buildGrid() {
+    dumpEl.className = "dump";
+    dumpEl.innerHTML = "";
+    for (var c = 0; c < 2; c++) {
+      var col = document.createElement("div");
+      for (var r = 0; r < ROWS; r++) {
+        var cell = c * ROWS + r;
+        var row = document.createElement("div");
+        row.className = "row";
+        var addr = document.createElement("span");
+        addr.className = "addr";
+        addr.textContent = "0x" + hex(DATA.addr + cell * CELL) + " ";
+        row.appendChild(addr);
+        for (var k = 0; k < CELL; k++) {
+          var i = cell * CELL + k;
+          var span = document.createElement("span");
+          span.textContent = chars[i];
+          span.setAttribute("data-i", i);
+          row.appendChild(span);
+          charEls[i] = span;
+        }
+        col.appendChild(row);
+      }
+      dumpEl.appendChild(col);
+    }
+  }
+
+  function loadTokens() {
+    tokens = [];
+    DATA.words.forEach(function (w) {
+      tokens.push({ kind: "word", start: w[0], end: w[0] + w[1].length - 1,
+                    text: w[1], alive: true });
+    });
+    DATA.tricks.forEach(function (t) {
+      tokens.push({ kind: "trick", start: t[0], end: t[1], alive: true });
+    });
+    reindex();
+  }
+
+  function reindex() {
+    owner.fill(-1);
+    tokens.forEach(function (token, t) {
+      if (!token.alive) return;
+      for (var i = token.start; i <= token.end; i++) owner[i] = t;
+    });
+  }
+
+  // ── painting ───────────────────────────────────────────────────────────
+
+  function pips() {
+    var out = attempts + " ATTEMPT(S) LEFT: ";
+    for (var i = 0; i < attempts; i++) out += (i ? " " : "") + "■";
+    return out;
+  }
+
+  function paint() {
+    var lo = caret, hi = caret;
+    var t = owner[caret];
+    if (t >= 0) { lo = tokens[t].start; hi = tokens[t].end; }
+
+    for (var i = 0; i < TOTAL; i++) {
+      var el = charEls[i];
+      if (!el) continue;
+      if (el.textContent !== chars[i]) el.textContent = chars[i];
+      el.classList.toggle("sel", state === "play" && i >= lo && i <= hi);
+    }
+
+    pipsEl.textContent = pips();
+    logEl.textContent = log.slice(-DATA.logLines).join("\n");
+  }
+
+  function push(line) {
+    log.push(line);
+    statusEl.textContent = line;
+  }
+
+  // ── moving around ──────────────────────────────────────────────────────
+
+  function move(step) {
+    caret = Math.min(TOTAL - 1, Math.max(0, caret + step));
+  }
+
+  function moveRow(step) {
+    var cell = Math.floor(caret / CELL);
+    var column = cell < ROWS ? 0 : 1;
+    var row = cell - column * ROWS + step;
+    if (row < 0 || row >= ROWS) return;
+    caret = (column * ROWS + row) * CELL + (caret % CELL);
+  }
+
+  function hop(dir) {
+    var starts = tokens.filter(function (t) { return t.alive; })
+                       .map(function (t) { return t.start; })
+                       .sort(function (a, b) { return a - b; });
+    if (!starts.length) return;
+    var here = owner[caret] >= 0 ? tokens[owner[caret]].start : caret;
+    var next = null;
+    for (var i = 0; i < starts.length; i++) {
+      if (dir > 0 && starts[i] > here) { next = starts[i]; break; }
+      if (dir < 0 && starts[i] < here) next = starts[i];
+    }
+    caret = next === null ? (dir > 0 ? starts[0] : starts[starts.length - 1]) : next;
+  }
+
+  // ── the rules ──────────────────────────────────────────────────────────
+
+  function likeness(guess, secret) {
+    var n = Math.min(guess.length, secret.length);
+    var hits = 0;
+    for (var i = 0; i < n; i++) if (guess[i] === secret[i]) hits++;
+    return hits;
+  }
+
+  function eraseWord(token) {
+    token.alive = false;
+    for (var i = token.start; i <= token.end; i++) chars[i] = ".";
+  }
+
+  function tryWord(token) {
+    push(">" + token.text);
+    if (token.text === answer) { unlock(); return; }
+    attempts--;
+    push(">Entry denied.");
+    push(">" + likeness(token.text, answer) + "/" + answer.length + " correct.");
+    if (attempts <= 0) lockOut();
+  }
+
+  function useTrick(token) {
+    token.alive = false;
+    var duds = tokens.filter(function (t) {
+      return t.alive && t.kind === "word" && t.text !== answer;
+    });
+    if (duds.length === 0 || Math.random() < 0.25) {
+      attempts = DATA.attempts;
+      push(">Allowance replenished.");
+    } else {
+      eraseWord(duds[Math.floor(Math.random() * duds.length)]);
+      push(">Dud removed.");
+    }
+    reindex();
+  }
+
+  function activate() {
+    var t = owner[caret];
+    if (t < 0 || !tokens[t].alive) return;
+    if (tokens[t].kind === "trick") useTrick(tokens[t]);
+    else tryWord(tokens[t]);
+  }
+
+  function unlock() {
+    state = "win";
+    push(">Entry granted.");
+    push(">Skill matrix open.");
+    showMatrix();
+    finish();
+  }
+
+  function lockOut() {
+    state = "lock";
+    push(">TERMINAL LOCKED");
+    push(">CONTACT AN ADMIN");
+    dumpEl.classList.add("locked");
+    finish();
+  }
+
+  function finish() {
+    crtEl.classList.add("done");
+    resetEl.hidden = false;
+    resetEl.focus();
+  }
+
+
+  function showMatrix() {
+    dumpEl.className = "readout";
+    dumpEl.innerHTML = "";
+    var line = 0;
+    function write(text, cls) {
+      var div = document.createElement("div");
+      div.className = cls || "";
+      div.textContent = text;
+      div.style.animationDelay = (line++ * 0.06).toFixed(2) + "s";
+      dumpEl.appendChild(div);
+    }
+    write("PERSONNEL SKILL MATRIX");
+    write("");
+    DATA.sectors.forEach(function (sector, i) {
+      write("SECTOR " + ("0" + (i + 1)).slice(-2) + " -- " + sector[0], "sector");
+      sector[1].forEach(function (word) { write("   " + word, "item"); });
+      write("");
+    });
+  }
+
+  // ── wiring ─────────────────────────────────────────────────────────────
+
+  termEl.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+
+    if (e.key === "Escape") { termEl.blur(); return; }
+
+    // once it is won or locked the only way on is the reset button, which
+    // took focus already — no stray Enter wipes the message you just earned
+    if (state !== "play") return;
+
+    if (e.key === "ArrowLeft") move(-1);
+    else if (e.key === "ArrowRight") move(1);
+    else if (e.key === "ArrowUp") moveRow(-1);
+    else if (e.key === "ArrowDown") moveRow(1);
+    else if (e.key === "Tab") hop(e.shiftKey ? -1 : 1);
+    else if (e.key === "Enter" || e.key === " ") activate();
+    else if (e.key === "Home") caret = 0;
+    else if (e.key === "End") caret = TOTAL - 1;
+    else return;
+
+    e.preventDefault();
+    paint();
+  });
+
+  dumpEl.addEventListener("mousemove", function (e) {
+    if (state !== "play") return;
+    var i = e.target.getAttribute && e.target.getAttribute("data-i");
+    if (i === null || i === undefined) return;
+    caret = Number(i);
+    paint();
+  });
+
+  dumpEl.addEventListener("click", function (e) {
+    if (state !== "play") return;
+    var i = e.target.getAttribute && e.target.getAttribute("data-i");
+    if (i === null || i === undefined) return;
+    caret = Number(i);
+    termEl.focus();
+    activate();
+    paint();
+  });
+
+  termEl.addEventListener("focus", function () { crtEl.classList.add("live"); });
+  termEl.addEventListener("blur", function () { crtEl.classList.remove("live"); });
+  document.getElementById("wake").addEventListener("click", function () {
+    termEl.focus();
+  });
+
+  resetEl.addEventListener("click", function () { reset(); termEl.focus(); });
+
+  function reset() {
+    chars = DATA.cells.join("").split("");
+    state = "play";
+    attempts = DATA.attempts;
+    log = [">TERMLINK READY", ">ENTER PASSWORD"];
+    answer = DATA.words[Math.floor(Math.random() * DATA.words.length)][1];
+    dumpEl.classList.remove("locked");
+    crtEl.classList.remove("done");
+    resetEl.hidden = true;
+    buildGrid();
+    loadTokens();
+    caret = tokens.length ? tokens[0].start : 0;
+    paint();
+  }
+
+  reset();
+
+  // exposed so the build can drive it in a headless browser
+  window.TERMLINK = {
+    state: function () { return state; },
+    attempts: function () { return attempts; },
+    answer: function () { return answer; },
+    caret: function () { return caret; },
+    tokenAt: function (i) { return owner[i]; },
+    tokens: function () { return tokens; },
+    chars: function () { return chars.join(""); },
+    log: function () { return log; },
+    reset: reset,
+    setCaret: function (i) { caret = i; paint(); },
+    press: function (key, shift) {
+      termEl.dispatchEvent(new KeyboardEvent("keydown", {
+        key: key, shiftKey: !!shift, bubbles: true, cancelable: true
+      }));
+    }
+  };
+})();
+</script>
+</body>
+</html>
