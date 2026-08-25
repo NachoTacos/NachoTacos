@@ -1,32 +1,117 @@
-<h1 align="center">Hi 👋, I'm José Ignacio Contreras Méndez</h1>
-<h3 align="center">Machine learning entusiast, programming since highschool, on the way of a bachelor degree in software engineering, loves python.</h3>
+<div align="center">
 
-- 🌱 I’m currently learning **Python, machine learning, c++, amazon web services, amazon sagemaker, jupyter notebook**
+<img src="assets/terminal-header.svg" width="100%" alt="Terminal boot sequence: access granted">
 
-- 👯 I’m looking to collaborate on **any machine learning project**
+<br>
 
-- 🤝 I’m looking for help with **artificial intelligence **
+![status](https://img.shields.io/badge/STATUS-ONLINE-2bff6a?style=flat-square&labelColor=04120a)
+![build](https://img.shields.io/badge/BUILD-PASSING-2bff6a?style=flat-square&labelColor=04120a)
+![license](https://img.shields.io/badge/LICENSE-MIT-17a844?style=flat-square&labelColor=04120a)
+![version](https://img.shields.io/badge/VER-2.4.1-17a844?style=flat-square&labelColor=04120a)
 
-- 💬 Ask me about **Python, machine learning, c++**
+</div>
 
-- 📫 How to reach me **nahdhsh@gmail.com**
+> [!WARNING]
+> UNAUTHORIZED ACCESS IS PROHIBITED. TERMINAL WILL LOCK AFTER 4 FAILED ATTEMPTS.
 
-- ⚡ Fun fact **I love playing chess**
+---
 
-<h3 align="left">Connect with me:</h3>
+## `> SET TERMINAL/INQUIRE`
 
+```diff
++ TERMLINK PROTOCOL v2.4.1
++ RIT-V300 ......................... OK
++ MEMORY BANK ...................... OK
+- ENCRYPTION MODULE ................ OFFLINE
+! HOLOTAPE DRIVE ................... STANDBY
+@@ 3 of 4 subsystems nominal @@
+```
 
-<a href="https://www.linkedin.com/in/jos%C3%A9-ignacio-contreras-m%C3%A9ndez-345291277/">Linkedin</a>
-  
- **Programming languages**
-  <p>
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" / heigth = "100" width = "100">
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" / height = "100" width = "100">
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" / height = "100" width = "100">
-  </p>
-  **Frameworks** 
- <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ionic/ionic-original.svg" / height = "100" width = "100">
-  **Databases**
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original-wordmark.svg" / height = "100" width = "100">
+Everything in that block is real, selectable text — no image. GitHub colors `+` lines green, `-` lines red and `!` / `@@` lines orange inside a `diff` fence, in both light and dark themes. It's the only way to get colored monospace text natively.
 
+## `> RUN INSTALL.EXE`
 
+```console
+$ npm install your-project
+$ your-project --init
+[OK] terminal ready
+```
+
+## `> ACCESS PASSWORD RECOVERY`
+
+Pick a candidate. Expand to submit.
+
+<table>
+<tr><td width="33%" valign="top">
+
+<details><summary><code>&gt; TERMS</code></summary><br>
+
+```diff
+- Entry denied.
+- Likeness=1/5
+```
+</details>
+
+<details><summary><code>&gt; TRICK</code></summary><br>
+
+```diff
+- Entry denied.
+- Likeness=2/5
+```
+</details>
+
+</td><td width="33%" valign="top">
+
+<details><summary><code>&gt; THIRD</code></summary><br>
+
+```diff
+- Entry denied.
+- Likeness=0/5
+```
+</details>
+
+<details><summary><code>&gt; TANKS</code></summary><br>
+
+```diff
+- Entry denied.
+- Likeness=1/5
+```
+</details>
+
+</td><td width="33%" valign="top">
+
+<details><summary><code>&gt; README</code></summary><br>
+
+```diff
++ Exact match!
++ Please wait while
++ system is accessed.
+```
+</details>
+
+<details><summary><code>&gt; SKIES</code></summary><br>
+
+```diff
+- Entry denied.
+- Likeness=0/5
+```
+</details>
+
+</td></tr>
+</table>
+
+## `> DISPLAY SYSTEM STATUS`
+
+<table>
+<tr><td><code>REACTOR</code></td><td><code>████████░░</code></td><td>80%</td></tr>
+<tr><td><code>COOLANT</code></td><td><code>██████████</code></td><td>100%</td></tr>
+<tr><td><code>SHIELDS</code></td><td><code>███░░░░░░░</code></td><td>30%</td></tr>
+</table>
+
+Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to disconnect.
+
+---
+
+<div align="center">
+<sub><code>NOVACORP UNIFIED OPERATING SYSTEM — COPYRIGHT 2075-2077</code></sub>
+</div>
