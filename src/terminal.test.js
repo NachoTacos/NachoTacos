@@ -24,9 +24,13 @@
   t("starts playable with 4 attempts", T.state() === "play" && T.attempts() === 4,
     T.state() + "/" + T.attempts());
   t("caret opens on a selectable token", T.tokenAt(T.caret()) >= 0);
-  t("13 words and 8 tricks are live",
-    T.tokens().filter(function (x) { return x.alive && x.kind === "word"; }).length === 13 &&
-    T.tokens().filter(function (x) { return x.alive && x.kind === "trick"; }).length === 8);
+  var live = function (kind) {
+    return T.tokens().filter(function (x) { return x.alive && x.kind === kind; }).length;
+  };
+  t("every buried word and bracket trick is live",
+    live("word") === T.data().words.length && live("trick") === T.data().tricks.length,
+    live("word") + "/" + T.data().words.length + " words, " +
+    live("trick") + "/" + T.data().tricks.length + " tricks");
 
   // ── movement ──
   T.setCaret(0);

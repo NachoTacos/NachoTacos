@@ -1,20 +1,5 @@
 #!/usr/bin/env python3
-"""
-Builds the Fallout-style CRT terminal: the SVG screens for the GitHub pages,
-the SKILLS.md page one of them lives on, and the playable terminal in docs/.
 
-Everything is baked into each file: the font is embedded as base64 (no web fonts
-survive inside an <img>-loaded SVG), the barrel distortion is computed per
-character, and all motion is declarative CSS so it runs inside the image.
-
-    python3 build.py
-
-The playable page is src/terminal.html with the font, the dump and the skill
-list substituted in; the same dump is what assets/skills.svg shows, so the
-still image on SKILLS.md is that terminal's opening screen.
-
-Edit CONFIG below, re-run, commit assets/, SKILLS.md and docs/.
-"""
 
 import base64
 import collections
@@ -89,18 +74,12 @@ PAGE_BUTTONS = [
     ("RUN TERMLINK", "btn-run"),
 ]
 
-# ── Skills screen — the password-hack memory dump ────────────────────────────
-#
-# PLACEHOLDER CONTENT: replace every entry below with the technologies you
-# actually use. Each word is buried in the on-screen garbage *and* printed in
-# the readable sector list on SKILLS.md, so this list is the only place to
-# edit — both views are generated from it. Keep each word to DUMP_CELL
-# characters or fewer: it has to fit on one line of the dump.
+
 SKILL_SECTORS = [
-    ("LANGUAGES",  ["LANG-01", "LANG-02", "LANG-03", "LANG-04"]),
-    ("FRAMEWORKS", ["FRAME-01", "FRAME-02", "FRAME-03"]),
-    ("TOOLING",    ["TOOL-01", "TOOL-02", "TOOL-03"]),
-    ("SYSTEMS",    ["SYS-01", "SYS-02", "SYS-03"]),
+    ("LANGUAGES",  ["C#", "Python", "Java", "TypeScript"]),
+    ("FRAMEWORKS", [".NET", "Angular", "ReactNative", "Expo"]),
+    ("OTHERS",     ["MySQL", "PostgreSQL", "Dbeaver", "Git", "Node.js"]),
+    ("SYSTEMS",    ["AI", "Linux", "IoT"]),
 ]
 
 SKILL_HEADER = [
@@ -729,7 +708,7 @@ def main():
 
     page = os.path.join(ROOT, "SKILLS.md")
     with open(page, "w", encoding="utf-8") as f:
-        f.write(build_skills_page(version=1))
+        f.write(build_skills_page(version=2))
     print(f"wrote {page}")
 
     game = os.path.join(docs, "index.html")

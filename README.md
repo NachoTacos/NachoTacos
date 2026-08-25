@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/terminal.svg?v=2" width="100%" alt="Terminal: personnel file loaded. Select an entry.">
+<img src="assets/terminal.svg?v=3" width="100%" alt="Terminal: personnel file loaded. Select an entry.">
 
 <a href="https://github.com/NachoTacos?tab=repositories"><img src="assets/btn-projects.svg?v=2" height="50" alt="Projects"></a>
 <a href="SKILLS.md"><img src="assets/btn-skills.svg?v=2" height="50" alt="Skills"></a>

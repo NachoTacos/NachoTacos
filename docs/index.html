@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NOVACORP TERMLINK</title>
+<title>ROBCO TERMLINK</title>
 <meta name="description" content="A working RobCo-style terminal hack. Find the password among the memory dump to unlock the skill matrix.">
 <style>
 @font-face {
@@ -110,8 +110,7 @@ body {
 .screen {
   position: relative;
   z-index: 1;
-  /* keep this in step with BLOOM_NEAR / BLOOM_FAR in build.py — a halo, not
-     a second copy of the text, or the glyphs blow out and stop being legible */
+
   text-shadow: 0 0 4px rgba(47, 255, 107, 0.35),
                0 0 14px rgba(47, 255, 107, 0.22);
 }
@@ -151,7 +150,7 @@ body {
 
 .dump.locked { opacity: 0.35; }
 
-/* the sector readout that replaces the dump once you are in */
+
 .readout { white-space: pre; }
 .readout div { opacity: 0; animation: type 0.01s linear forwards; }
 .readout .sector { color: var(--green); }
@@ -160,7 +159,7 @@ body {
 .log { white-space: pre; min-width: 21ch; }
 .blk {
   display: inline-block;
-  width: 0.54em;          /* one character cell of the embedded face */
+  width: 0.54em;         
   height: 0.95em;
   vertical-align: -0.12em;
   background: var(--green);
@@ -175,7 +174,6 @@ body {
 
 .prompt .blink { animation: blink 1.02s steps(1) infinite; }
 
-/* ── the bits around the glass ─────────────────────────────────────────── */
 
 .hint {
   margin: 1.6em 0 0;
@@ -196,7 +194,6 @@ body {
   color: var(--green);
 }
 
-/* visibility, not display, so activating the terminal does not shift the page */
 .crt.live .wake, .crt.done .wake { visibility: hidden; }
 
 button {
@@ -280,7 +277,7 @@ footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
   <noscript><p>This terminal needs JavaScript. The full list is below.</p></noscript>
   <details>
     <summary>&gt; DISPLAY PLAINTEXT</summary>
-    <h2>SECTOR 01 -- LANGUAGES</h2><ul><li>LANG-01</li><li>LANG-02</li><li>LANG-03</li><li>LANG-04</li></ul><h2>SECTOR 02 -- FRAMEWORKS</h2><ul><li>FRAME-01</li><li>FRAME-02</li><li>FRAME-03</li></ul><h2>SECTOR 03 -- TOOLING</h2><ul><li>TOOL-01</li><li>TOOL-02</li><li>TOOL-03</li></ul><h2>SECTOR 04 -- SYSTEMS</h2><ul><li>SYS-01</li><li>SYS-02</li><li>SYS-03</li></ul>
+    <h2>SECTOR 01 -- LANGUAGES</h2><ul><li>C#</li><li>Python</li><li>Java</li><li>TypeScript</li></ul><h2>SECTOR 02 -- FRAMEWORKS</h2><ul><li>.NET</li><li>Angular</li><li>ReactNative</li><li>Expo</li></ul><h2>SECTOR 03 -- OTHERS</h2><ul><li>MySQL</li><li>PostgreSQL</li><li>Dbeaver</li><li>Git</li><li>Node.js</li></ul><h2>SECTOR 04 -- SYSTEMS</h2><ul><li>AI</li><li>Linux</li><li>IoT</li></ul>
   </details>
   <p><a href="https://github.com/NachoTacos">&lt; BACK TO PROFILE</a></p>
 </footer>
@@ -289,7 +286,7 @@ footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
 (function () {
   "use strict";
 
-  var DATA = {"rows":15,"cell":12,"addr":62704,"attempts":4,"logLines":16,"cells":["/\",}]^';&|/)",">?#[$_+#_,.(","{&&%[:*-!#?:","?&>+%@%[?@!/","-/$([$\\,}?^#",">SYS-01>{|_}","&_,[{.@-\"]\\[","[}]@:?%!^?;?","*/\\\"??&=.:_&","!,[:;)]{$;#+","*=|?%\\[-'$(&",":>\"'FRAME-03",":\\*;TOOL-01&","^=*|}?[=;.\\(",",:?%@(@{(|).","TOOL-02/!({[","+;^{LANG-03\\","{[+)?-?//(&{",".;-._|#=.\\%:","++-{,$\\}&'\"}","SYS-03[?|?!(",">(\\)(][;[@.]",">}?[>-*(^$=>","?\\\\&FRAME-02","LANG-01_&[.*","\u003c*_\\FRAME-01","]%)LANG-04)\"","\"!?@LANG-02)","TOOL-03&.&*!","\u003c|SYS-02+\\.}"],"words":[[61,"SYS-01"],[136,"FRAME-03"],[148,"TOOL-01"],[180,"TOOL-02"],[196,"LANG-03"],[240,"SYS-03"],[280,"FRAME-02"],[288,"LANG-01"],[304,"FRAME-01"],[315,"LANG-04"],[328,"LANG-02"],[336,"TOOL-03"],[350,"SYS-02"]],"tricks":[[68,71],[75,81],[84,86],[110,114],[173,178],[231,235],[253,255],[258,263]],"sectors":[["LANGUAGES",["LANG-01","LANG-02","LANG-03","LANG-04"]],["FRAMEWORKS",["FRAME-01","FRAME-02","FRAME-03"]],["TOOLING",["TOOL-01","TOOL-02","TOOL-03"]],["SYSTEMS",["SYS-01","SYS-02","SYS-03"]]]};
+  var DATA = {"rows":15,"cell":12,"addr":62704,"attempts":4,"logLines":16,"cells":[">ReactNative","$Dbeaver#^$\\","TypeScript%\"","}|>|'{/!\";%(",":{-_@%![.AI)","=+\u003c\u003c!\".NET?'","|>@)\u003c{\\=%!|[","\">=)\\!;(?IoT",",?([\u003c%@/:||[","[+\\*|^%'|;]\\","\\C#.(+,&{;\"\u003c",">*{}:&?\"%{($","&[PostgreSQL","\u003c\"'&-]!,|%\\{",".\u003c\u003c;{*+%\"$%=",";-|#*%%\"$+#?","/{\\{.>.\u003c$|;?","Node.js$^#^>","=#}(\\^{$,'&|","\\{\\>}}/(&%,)","+Angular$\"^\"","'*!/$#\\}|$,#","Java:{}}{[+@","*>:!$%\\[![]!","|&%&Python-[","\u003c'_@=%[_/Git","|+:|)=\u003c$%!:>","'}}\u003c.^?Expo%","Linux@-!]]]&","MySQL]#-;@\"\u003c"],"words":[[1,"ReactNative"],[13,"Dbeaver"],[24,"TypeScript"],[57,"AI"],[66,".NET"],[93,"IoT"],[121,"C#"],[146,"PostgreSQL"],[204,"Node.js"],[241,"Angular"],[264,"Java"],[292,"Python"],[309,"Git"],[331,"Expo"],[336,"Linux"],[348,"MySQL"]],"tricks":[[108,118],[134,135],[229,232],[235,239],[269,270],[283,286],[318,323]],"sectors":[["LANGUAGES",["C#","Python","Java","TypeScript"]],["FRAMEWORKS",[".NET","Angular","ReactNative","Expo"]],["OTHERS",["MySQL","PostgreSQL","Dbeaver","Git","Node.js"]],["SYSTEMS",["AI","Linux","IoT"]]]};
 
   var CELL = DATA.cell;
   var ROWS = DATA.rows;
@@ -522,8 +519,7 @@ footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
 
     if (e.key === "Escape") { termEl.blur(); return; }
 
-    // once it is won or locked the only way on is the reset button, which
-    // took focus already — no stray Enter wipes the message you just earned
+ 
     if (state !== "play") return;
 
     if (e.key === "ArrowLeft") move(-1);
@@ -583,7 +579,6 @@ footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
 
   reset();
 
-  // exposed so the build can drive it in a headless browser
   window.TERMLINK = {
     state: function () { return state; },
     attempts: function () { return attempts; },
@@ -591,6 +586,7 @@ footer h2 { font-size: 1em; margin: 0.8em 0 0.2em; color: var(--green); }
     caret: function () { return caret; },
     tokenAt: function (i) { return owner[i]; },
     tokens: function () { return tokens; },
+    data: function () { return DATA; },
     chars: function () { return chars.join(""); },
     log: function () { return log; },
     reset: reset,
